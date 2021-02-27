@@ -1,7 +1,16 @@
 #!/usr/bin/env python3
-# (c) Mihai Chiroiu 18 May 2020
-# sudo pip3 install requests
-# https://docs.moodle.org/dev/Web_service_API_functions
+
+"""
+Retrieve feedback from Moodle site. Use Moodle web service API functions to
+list courses, list feedback forms in courses and retrieve feedback contents.
+
+Tested on UPB Moodle sites.
+
+Configure URL and credentials in feedback.conf file.
+
+(c) Mihai Chiroiu 18 May 2020
+(c) Razvan Deaconescu, razvan.deaconescu@upb.ro
+"""
 
 import json
 import requests
@@ -9,8 +18,14 @@ import sys
 import configparser
 
 
+# This is the file storing the Moodle URL and credentials.
 CONFIG_FILE = "feedback.conf"
 
+# Credentials used to interogate Moodle web services.
+# username and base_usr are stored in CONFIG_FILE.
+# rest_url is derived from base_url.
+# moodle_token is the authentication token obtained via the moodle_mobile_app service.
+# userid is the user id obtained with the core_webservice_get_site_info service.
 username = ""
 base_url = ""
 rest_url = ""
@@ -19,6 +34,9 @@ userid = ""
 
 
 def parse_config(config_file):
+    """Parse configuration file and extract Moodle URL and credentials in
+    global variables.
+    """
     global username
     global password
     global base_url
@@ -34,6 +52,9 @@ def parse_config(config_file):
 
 
 def get_auth_token():
+    """Get authentication token from login.
+    The token (and user id) are required when interrogating Moodle web services.
+    """
     global moodle_token
 
     token_url = base_url + "/login/token.php"
@@ -50,6 +71,9 @@ def get_auth_token():
 
 
 def get_userid():
+    """Get user id.
+    The user id (and token) are required when interrogating Moodle web services.
+    """
     global moodle_token
     global userid
 
@@ -64,6 +88,9 @@ def get_userid():
 
 
 def get_user_courses():
+    """Get coreses that current user is enrolled to.
+    Use core_enrol_get_users_courses web service function.
+    """
     global moodle_token
     global userid
 
@@ -78,6 +105,9 @@ def get_user_courses():
 
 
 def get_courses():
+    """Get all courses. This requires administrative access.
+    Use core_course_get_courses web service function.
+    """
     global moodle_token
     global userid
 
@@ -91,6 +121,11 @@ def get_courses():
 
 
 def get_user_courses_ids():
+    """Get dictionary of course ids for enrolled courses.
+    A dictionary has the course id (an integer) as key and the short name as
+    the value. For example, 10959 is the course id and '03-ACS-Administrativ-UPB'
+    is the course shortname.
+    """
     course_ids = {}
 
     for course in get_user_courses():
@@ -99,6 +134,11 @@ def get_user_courses_ids():
 
 
 def get_courses_ids():
+    """Get dictionary of course ids.
+    A dictionary has the course id (an integer) as key and the short name as
+    the value. For example, 10959 is the course id and '03-ACS-Administrativ-UPB'
+    is the course shortname.
+    """
     course_ids = {}
 
     for course in get_courses():
@@ -107,6 +147,11 @@ def get_courses_ids():
 
 
 def get_user_feedback_ids():
+    """Get feedback form IDs.
+    Go through courses and retrieve feedbacks for each course.
+    In case of multiple feedback forms, only retrieve the first one.
+    TODO: Consider a way of identifying the official feedback form.
+    """
     global moodle_token
     global userid
 
