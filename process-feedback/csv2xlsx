@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if test $# -ne 2; then
-    echo "Usage: $0 <csv-folder> <xls-folder>" 1>&2
+    echo "Usage: $0 <csv-folder> <xlsx-folder>" 1>&2
     exit 1
 fi
 
@@ -12,7 +12,7 @@ fi
 
 IFS=$'\n'
 for f in "$1"/*.csv; do
-    xls="$2"/"$(basename "$f" .csv).xls"
-    echo "Convert $f to $xls"
-    ssconvert "$f" "$xls" > /dev/null 2>&1
+    xlsx="$2"/"$(basename "$f" .csv).xlsx"
+    echo "Convert $f to $xlsx"
+    ssconvert "$f" "$xlsx" > /dev/null 2>&1
 done
