@@ -346,7 +346,6 @@ class FeedbackContent():
                 'assists': {}
             }
 
-
     def convert_value(self, key, raw):
         if key == 'eval_overall' or key == 'load' or key == 'equipment' \
             or key == 'prof_know' or key == 'prof_teach' or key == 'prof_interact' \
@@ -391,6 +390,12 @@ class FeedbackContent():
 
     def get_assists(self):
         return sorted(set([r['assist'] for r in self.feedback_list]))
+
+    def is_prof_for_course(self, prof, course):
+        for item in self.select_responses_by_key('prof', prof['fullname']):
+            if item['course'] == course.shortname:
+                return True
+        return False
 
     def compute_average_per_course(self):
         for item in self.get_courses():
@@ -495,10 +500,11 @@ class Group():
         self.courses.append(c)
         self.students4course[c.shortname] = c.num_students
         for p in c.profs:
-            if p['fullname'] in self.students4prof.keys():
-                self.students4prof[p['fullname']] += c.num_students
-            else:
-                self.students4prof[p['fullname']] = c.num_students
+            if self.feedback.is_prof_for_course(p, c):
+                if p['fullname'] in self.students4prof.keys():
+                    self.students4prof[p['fullname']] += c.num_students
+                else:
+                    self.students4prof[p['fullname']] = c.num_students
 
     def add_category(self, category_id):
         for c in self.processor.courses4category(category_id):
