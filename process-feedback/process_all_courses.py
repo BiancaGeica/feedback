@@ -32,7 +32,7 @@ def main():
     for c in p.courses:
         print("Processing course {} ({})".format(c['id'], c['shortname']))
         g = p.construct_group_for_course_id(c['id'])
-        pickle.dump(g.result, open(os.path.join(processed_courses, '{}'.format(c['id'])), "wb"))
+        pickle.dump(g.result, open(os.path.join(processed_courses, '{}.p'.format(c['id'])), "wb"))
 
 
 if __name__ == "__main__":

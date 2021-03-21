@@ -48,8 +48,10 @@ def main():
             sys.exit(1)
 
     print("Processing category {} ({})".format(c['id'], c['name']))
-    g = p.construct_group_for_category_id(c['id'])
-    pickle.dump(g.result, open(os.path.join(processed_categories, '{}'.format(c['id'])), "wb"))
+    g = p.construct_class_groups_for_category_id(c['id'])
+    pickle.dump(g['all'].result, open(os.path.join(processed_categories, '{}.p'.format(c['id'])), "wb"))
+    pickle.dump(g['bachelor'].result, open(os.path.join(processed_categories, '{}_bachelor.p'.format(c['id'])), "wb"))
+    pickle.dump(g['master'].result, open(os.path.join(processed_categories, '{}_master.p'.format(c['id'])), "wb"))
 
 
 if __name__ == "__main__":

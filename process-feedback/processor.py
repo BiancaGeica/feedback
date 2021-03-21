@@ -5,6 +5,7 @@ import sys
 import json
 import pickle
 import os
+import re
 from anytree import NodeMixin, RenderTree, PreOrderIter
 
 
@@ -466,8 +467,11 @@ class Course():
 
 class Group():
 
-    def __init__(self, processor):
+    def __init__(self, processor, blacklist):
         self.courses = []
+        self.blacklist = re.compile(blacklist)
+        self.blacklisted_courses = []
+        self.rejected_courses = []
         self.processor = processor
         self.students4prof = {}
         self.students4course = {}
@@ -477,12 +481,18 @@ class Group():
 
     def add_course(self, course_id):
         c = Course(course_id, self.processor)
+        if self.blacklist.match(c.shortname):
+            print("blacklisting {} ({})".format(c.shortname, c.id))
+            self.blacklisted_courses.append(c)
+            return
         if c.has_feedback():
             try:
                 self.feedback.add_json(self.processor.get_feedback_file_contents(c.feedback_id))
             except:
                 print("Unusable feedback for course {}".format(c.shortname))
-        self.courses.append(Course(course_id, self.processor))
+                self.rejected_courses.append(c)
+                return
+        self.courses.append(c)
         self.students4course[c.shortname] = c.num_students
         for p in c.profs:
             if p['fullname'] in self.students4prof.keys():
@@ -494,7 +504,7 @@ class Group():
         for c in self.processor.courses4category(category_id):
             self.add_course(c)
 
-    def process_feedback(self):
+    def process(self):
         self.feedback.compute_averages()
         self.result = self.feedback.get_result()
         for k in self.result['courses'].keys():
@@ -507,6 +517,9 @@ class Group():
             else:
                 self.result['profs'][k]['num_students']['value'] = 0
                 self.result['profs'][k]['percentage']['value'] = 0.0
+        self.result['courses_list'] = [c.shortname for c in self.courses]
+        self.result['blacklisted'] = [c.shortname for c in self.blacklisted_courses]
+        self.result['rejected'] = [c.shortname for c in self.rejected_courses]
 
     def get_result(self):
         return self.result
@@ -701,13 +714,31 @@ class Processor():
             print("course: {} ({}), students: {}, feedback: {} ({}) - {:.2f}%".format(course_id, shortname, num_students, feedback_id, num_feedbacks, percent))
 
     def construct_group_for_category_id(self, category_id):
-        g = Group(self)
+        g = Group(self, '^([0-9]+-[^-]+-(M-A[1-2]-S[1-2]-(CSP|[cC]ercet)|[LM]-A[1-4]-S2)|[^0-9])')
         g.add_category(category_id)
-        g.process_feedback()
+        g.process()
         return g
+
+    def construct_class_groups_for_category_id(self, category_id):
+        g = Group(self, '^([0-9]+-[^-]+-(M-A[1-2]-S[1-2]-(CSP|[cC]ercet)|[LM]-A[1-4]-S2)|[^0-9])')
+        g.add_category(category_id)
+        g.process()
+
+        g_bachelor = Group(self, '^([0-9]+-[^-]+-(M-|[LM]-A[1-4]-S2)|[^0-9])')
+        g_bachelor.add_category(category_id)
+        g_bachelor.process()
+
+        g_master = Group(self, '^([0-9]+-[^-]+-(M-A[1-2]-S[1-2]-(CSP|[cC]ercet)|[LM]-A[1-4]-S2|L-)|[^0-9])')
+        g_master.add_category(category_id)
+        g_master.process()
+
+        return {'all': g,
+                'bachelor': g_bachelor,
+                'master': g_master
+                }
 
     def construct_group_for_course_id(self, course_id):
         g = Group(self)
         g.add_course(course_id)
-        g.process_feedback()
+        g.process()
         return g
