@@ -6,6 +6,7 @@ import json
 import pickle
 import os
 import re
+import statistics
 from anytree import NodeMixin, RenderTree, PreOrderIter
 
 
@@ -15,124 +16,93 @@ class FeedbackAverage():
         self.collection = {
             'eval_overall': {
                 'title': 'Evaluarea dumneavoastră generală cu privire la această disciplină este pozitivă?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'expected_grade': {
                 'title': 'Care este nota pe care vă așteptați să o obțineți la această disciplină?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'load': {
                 'title': 'Încărcarea generală la această disciplină este mai mică decât cea a altor discipline care oferă același număr de credite?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'equipment': {
                 'title': 'Dotarea (locație / echipamente hardware și software / suport digital) este adecvată activităților acestei discipline?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'part': {
                 'title': 'Numărul aproximativ de activități la care ați participat (curs + aplicații):',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'prof_know': {
                 'title': 'Cadrul didactic stăpânește bine domeniul de studiu?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'prof_teach': {
                 'title': 'Metoda de expunere a fost potrivită?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'prof_interact': {
                 'title': 'Cursul a stimulat discuțiile și cadrul didactic a răspuns clar întrebărilor studenților?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'prof_behave': {
                 'title': 'Comportamentul cadrului didactic față de studenți a fost adecvat?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'lecture_doc': {
                 'title': 'Materialele didactice puse la dispoziție sunt suficiente pentru înțelegerea cursului?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'assist_know': {
                 'title': 'Cadrul didactic stăpânește bine domeniul de studiu?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'assist_teach': {
                 'title': 'Cadrul didactic a sprijinit activitatea individuală a studenților?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'assist_interact': {
                 'title': 'Aplicațile au stimulat discuțiile și cadrul didactic a răspuns clar întrebărilor studenților?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'assist_behave': {
                 'title': 'Comportamentul cadrului didactic față de studenți a fost adecvat?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'lab_doc': {
                 'title': 'Materialele didactice puse la dispoziție sunt suficiente pentru înțelegerea aplicațiilor?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'assign_time': {
                 'title': 'Estimați numărul mediu de ore pe săptămână dedicate rezolvării temelor',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'assign_diff': {
                 'title': 'Numărul și dificultatea temelor au fost adecvate?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             'assign_useful': {
                 'title': 'Temele/proiectele/activitățile practice au ajutat la înțelegerea materiei?',
-                'sum': 0.0,
-                'num': 0,
-                'average': 0.0
+                'items': []
                 },
             }
         self.num = 0
-        self.overall_prof = 0.0
-        self.overall_assist = 0.0
+        self.overall_prof = {
+                'value': 0.0,
+                'stdev': 0.0
+                }
+        self.overall_assist = {
+                'value': 0.0,
+                'stdev': 0.0
+                }
         self.name = name
         self.result = {}
 
     def add_response(self, response):
         for k, v in self.collection.items():
             if response[k]:
-                v['sum'] += response[k]
-                v['num'] += 1
+                v['items'].append(response[k])
         self.num += 1
 
     def add_response_list(self, responses):
@@ -140,14 +110,37 @@ class FeedbackAverage():
             self.add_response(r)
 
     def compute(self):
-        for k, v in self.collection.items():
-            if v['num'] != 0:
-                v['average'] = v['sum'] / v['num']
-            else:
-                v['average'] = 0
+        try:
+            self.overall_prof['value'] = (statistics.mean(self.collection['prof_know']['items']) +
+                    statistics.mean(self.collection['prof_teach']['items']) +
+                    statistics.mean(self.collection['prof_interact']['items']) +
+                    statistics.mean(self.collection['prof_behave']['items'])) / 4
+        except statistics.StatisticsError:
+            self.overall_prof['value'] = 0.0
 
-        self.overall_prof = (self.collection['prof_know']['average'] + self.collection['prof_teach']['average'] + self.collection['prof_interact']['average'] + self.collection['prof_behave']['average']) / 4
-        self.overall_assist = (self.collection['assist_know']['average'] + self.collection['assist_teach']['average'] + self.collection['assist_interact']['average'] + self.collection['assist_behave']['average']) / 4
+        try:
+            self.overall_assist['value'] = (statistics.mean(self.collection['assist_know']['items']) +
+                    statistics.mean(self.collection['assist_teach']['items']) +
+                    statistics.mean(self.collection['assist_interact']['items']) +
+                    statistics.mean(self.collection['assist_behave']['items'])) / 4
+        except statistics.StatisticsError:
+            self.overall_assist['value'] = 0.0
+
+        try:
+            self.overall_prof['stdev'] = (statistics.stdev(self.collection['prof_know']['items']) +
+                    statistics.stdev(self.collection['prof_teach']['items']) +
+                    statistics.stdev(self.collection['prof_interact']['items']) +
+                    statistics.stdev(self.collection['prof_behave']['items'])) / 4
+        except statistics.StatisticsError:
+            self.overall_assist['stdev'] = 0.0
+
+        try:
+            self.overall_assist['stdev'] = (statistics.stdev(self.collection['assist_know']['items']) +
+                    statistics.stdev(self.collection['assist_teach']['items']) +
+                    statistics.stdev(self.collection['assist_interact']['items']) +
+                    statistics.stdev(self.collection['assist_behave']['items'])) / 4
+        except statistics.StatisticsError:
+            self.overall_assist['stdev'] = 0.0
 
         res = {}
         res['name'] = {
@@ -168,16 +161,29 @@ class FeedbackAverage():
                 }
         res['overall_prof'] = {
                 'title': 'Evaluare agregată titular curs',
-                'value': self.overall_prof
+                'value': self.overall_prof['value'],
+                'stdev': self.overall_prof['stdev']
                 }
         res['overall_assist'] = {
                 'title': 'Evaluare agregată titular laborator',
-                'value': self.overall_assist
+                'value': self.overall_assist['value'],
+                'stdev': self.overall_assist['stdev']
                 }
         for k, v in self.collection.items():
+            try:
+                m = statistics.mean(v['items'])
+            except statistics.StatisticsError:
+                m = 0
+
+            try:
+                s = statistics.stdev(v['items'], m)
+            except statistics.StatisticsError:
+                s = 0
+
             res[k] = {
                     'title': v['title'],
-                    'value': v['average']
+                    'value': m,
+                    'stdev': s
                     }
         self.result = res
 
