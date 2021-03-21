@@ -529,6 +529,11 @@ class Group():
             else:
                 self.result['profs'][k]['num_students']['value'] = 0
                 self.result['profs'][k]['percentage']['value'] = 0.0
+        self.result['overall']['num_students']['value'] = sum([self.result['courses'][k]['num_students']['value'] for k in self.result['courses'].keys()])
+        if self.result['overall']['num_students']['value'] != 0:
+            self.result['overall']['percentage']['value'] = float(self.result['overall']['num']['value']) / self.result['overall']['num_students']['value'] * 100
+        else:
+            self.result['overall']['percentage']['value'] = 0.0
         self.result['courses_list'] = [c.shortname for c in self.courses]
         self.result['blacklisted'] = [c.shortname for c in self.blacklisted_courses]
         self.result['rejected'] = [c.shortname for c in self.rejected_courses]
