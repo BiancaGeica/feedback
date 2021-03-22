@@ -259,6 +259,8 @@ class Category():
 
         for i in range(1, 5):
             num = len([v for k, v in comp.items() if v['eval_overall']['value'] >= i and v['eval_overall']['value'] < i+1])
+            if i == 4:
+                num += len([v for k, v in comp.items() if v['eval_overall']['value'] == 5])
             all_num = len(comp)
             ws['A{}'.format(i+1)] = '{}-{}'.format(i, i+1)
             ws['B{}'.format(i+1)] = num
@@ -287,6 +289,8 @@ class Category():
 
         for i in range(1, 5):
             num = len([v for k, v in comp.items() if v['overall_prof']['value'] >= i and v['overall_prof']['value'] < i+1])
+            if i == 4:
+                num += len([v for k, v in comp.items() if v['overall_prof']['value'] == 5])
             all_num = len(comp)
             ws['A{}'.format(i+1)] = '{}-{}'.format(i, i+1)
             ws['B{}'.format(i+1)] = num
@@ -315,6 +319,8 @@ class Category():
 
         for i in range(1, 5):
             num = len([v for k, v in comp.items() if v['overall_assist']['value'] >= i and v['overall_assist']['value'] < i+1])
+            if i == 4:
+                num += len([v for k, v in comp.items() if v['overall_assist']['value'] == 5])
             all_num = len(comp)
             ws['A{}'.format(i+1)] = '{}-{}'.format(i, i+1)
             ws['B{}'.format(i+1)] = num
