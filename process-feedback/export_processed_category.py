@@ -50,8 +50,8 @@ def main():
 
     print("Processing category {} ({})".format(c['id'], c['name']))
     r = reader.Reader(courses, categories, processed_courses, processed_categories)
-    c = r.build_category(c['id'])
-    c.export_spreadsheet()
+    r.build_all_categories()
+    r.export_category(c['id'])
 
 
 if __name__ == "__main__":
