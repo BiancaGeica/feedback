@@ -21,7 +21,18 @@ class Category():
         self.parent = parent
 
     def set_result(self, result):
-        self.result = result
+        if result['Licenta']['courses']:
+            self.result['Licenta'] = result['Licenta']
+        else:
+            self.result['Licenta'] = None
+        if result['Masterat']['courses']:
+            self.result['Masterat'] = result['Masterat']
+        else:
+            self.result['Masterat'] = None
+        if self.result['Licenta'] and self.result['Masterat']:
+            self.result['Cumulat'] = result['Cumulat']
+        else:
+            self.result['Cumulat'] = None
 
     def print_result_line(data):
         value = ""
@@ -57,12 +68,15 @@ class Category():
         print("courses with no feedback: {}".format(len(result['courses_list']) - len(result['courses'])))
 
     def print_result(self):
-        print("\n==== CUMULAT ====\n")
-        Category.print_result_part(self.result['Cumulat'])
-        print("\n==== LICENȚĂ ====\n")
-        Category.print_result_part(self.result['Licenta'])
-        print("\n==== MASTERAT ====\n")
-        Category.print_result_part(self.result['Masterat'])
+        if self.result['Cumulat']:
+            print("\n==== CUMULAT ====\n")
+            Category.print_result_part(self.result['Cumulat'])
+        if self.result['Licenta']:
+            print("\n==== LICENȚĂ ====\n")
+            Category.print_result_part(self.result['Licenta'])
+        if self.result['Masterat']:
+            print("\n==== MASTERAT ====\n")
+            Category.print_result_part(self.result['Masterat'])
 
     def write_line_in_overall(ws, key, idx, result):
         ws['A{:d}'.format(idx)] = key
@@ -92,7 +106,12 @@ class Category():
         ws['F1'] = "Evaluare generală discipline (medie)"
         ws['G1'] = "Evaluare generală discipline (abatere standard)"
 
-        Category.write_line_in_overall(ws, "Complet", 2, self.result[part])
+        if part == 'Cumulat':
+            Category.write_line_in_overall(ws, 'Cumulat', 2, self.result['Cumulat'])
+            Category.write_line_in_overall(ws, 'Licenta', 3, self.result['Licenta'])
+            Category.write_line_in_overall(ws, 'Masterat', 4, self.result['Masterat'])
+        else:
+            Category.write_line_in_overall(ws, part, 2, self.result[part])
 
     def export_full_for_component(self, ws, part, component):
         for c_id in range(ord('A'), ord('Z')):
@@ -351,7 +370,8 @@ class Category():
 
     def export_spreadsheet(self):
         for k in self.result:
-            self.export_spreadsheet_part(k)
+            if self.result[k]:
+                self.export_spreadsheet_part(k)
 
 
 class Reader():
