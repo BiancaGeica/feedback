@@ -3,11 +3,13 @@
 import os
 import pickle
 import openpyxl
+import anytree
 
 
-class Category():
+class Category(anytree.NodeMixin):
 
-    def __init__(self, name, id, parent_id, path, parent=None, children=None):
+    def __init__(self, name, id, parent_id, path, export_path='.', parent=None, children=None):
+        super().__init__()
         self.name = name
         self.id = id
         self.parent_id = parent_id
@@ -16,9 +18,16 @@ class Category():
         if children:
             self.children = children
         self.result = {}
+        self.export_path = export_path
 
     def set_parent(self, parent):
         self.parent = parent
+
+    def has_parent(self):
+        return self.parent
+
+    def set_export_path(self, export_path):
+        self.export_path = export_path
 
     def set_result(self, result):
         if result['Licenta']['courses']:
@@ -90,8 +99,7 @@ class Category():
         ws['G{:d}'.format(idx)] = result['overall']['eval_overall']['stdev']
         ws['G{:d}'.format(idx)].number_format = openpyxl.styles.numbers.FORMAT_NUMBER_00
 
-    def export_overall(self, ws, part):
-        ws.title = "Ansamblu"
+    def export_overall(self, ws, part, maxlevel):
         for c_id in range(ord('A'), ord('H')):
             ws.column_dimensions[""+chr(c_id)].width = 20
         ws.row_dimensions[1].height = 36
@@ -106,12 +114,22 @@ class Category():
         ws['F1'] = "Evaluare generală discipline (medie)"
         ws['G1'] = "Evaluare generală discipline (abatere standard)"
 
-        if part == 'Cumulat':
-            Category.write_line_in_overall(ws, 'Cumulat', 2, self.result['Cumulat'])
-            Category.write_line_in_overall(ws, 'Licenta', 3, self.result['Licenta'])
-            Category.write_line_in_overall(ws, 'Masterat', 4, self.result['Masterat'])
-        else:
-            Category.write_line_in_overall(ws, part, 2, self.result[part])
+        idx = 2
+        for node in anytree.PreOrderIter(self, maxlevel=maxlevel):
+            if part == 'Cumulat':
+                if node.result['Cumulat']:
+                    Category.write_line_in_overall(ws, '{} (Cumulat)'.format(node.name), idx, node.result['Cumulat'])
+                    idx += 1
+                if node.result['Licenta']:
+                    Category.write_line_in_overall(ws, '{} (Licenta)'.format(node.name), idx, node.result['Licenta'])
+                    idx += 1
+                if node.result['Masterat']:
+                    Category.write_line_in_overall(ws, '{} (Masterat)'.format(node.name), idx, node.result['Masterat'])
+                    idx += 1
+            else:
+                if node.result[part]:
+                    Category.write_line_in_overall(ws, '{} ({})'.format(node.name, part), idx, node.result[part])
+                    idx += 1
 
     def export_full_for_component(self, ws, part, component):
         for c_id in range(ord('A'), ord('Z')):
@@ -333,8 +351,14 @@ class Category():
 
     def export_spreadsheet_part(self, part):
         wb = openpyxl.Workbook()
+
         ws = wb.active
-        self.export_overall(ws, part)
+        ws.title = "Ansamblu"
+        self.export_overall(ws, part, 2)
+
+        wb.create_sheet("Ansamblu (nivel 2)")
+        ws = wb["Ansamblu (nivel 2)"]
+        self.export_overall(ws, part, 3)
 
         wb.create_sheet("Cursuri (sumar)")
         ws = wb["Cursuri (sumar)"]
@@ -372,11 +396,14 @@ class Category():
         ws = wb["Titulari laborator (complet)"]
         self.export_full_for_component(ws, part, 'assists')
 
-        wb.save('{}.xlsx'.format(part))
+        wb.save(os.path.join(self.export_path, '{}.xlsx'.format(part)))
 
     def export_spreadsheet(self):
+        print("Exporting category {} to {}".format(self.name, self.export_path))
         for k in self.result:
             if self.result[k]:
+                if not os.path.exists(self.export_path):
+                    os.mkdir(self.export_path)
                 self.export_spreadsheet_part(k)
 
 
@@ -387,16 +414,58 @@ class Reader():
         self.categories = pickle.load(open(categories_file, 'rb'))
         self.processed_courses_dir = processed_courses_dir
         self.processed_categories_dir = processed_categories_dir
+        self.root = None
+        self.category_list = []
 
     def build_category(self, category_id):
         c = next((c for c in self.categories if c['id'] == category_id))
         c = Category(c['name'], c['id'], c['parent'], c['path'])
 
-        r = pickle.load(open(os.path.join(self.processed_categories_dir, '{}.p'.format(category_id)), "rb"))
+        r = pickle.load(open(os.path.join(self.processed_categories_dir, '{}.p'.format(c.id)), "rb"))
         c.set_result({
-            'Cumulat': pickle.load(open(os.path.join(self.processed_categories_dir, '{}.p'.format(category_id)), "rb")),
-            'Licenta': pickle.load(open(os.path.join(self.processed_categories_dir, '{}_bachelor.p'.format(category_id)), "rb")),
-            'Masterat': pickle.load(open(os.path.join(self.processed_categories_dir, '{}_master.p'.format(category_id)), "rb"))
+            'Cumulat': pickle.load(open(os.path.join(self.processed_categories_dir, '{}.p'.format(c.id)), "rb")),
+            'Licenta': pickle.load(open(os.path.join(self.processed_categories_dir, '{}_bachelor.p'.format(c.id)), "rb")),
+            'Masterat': pickle.load(open(os.path.join(self.processed_categories_dir, '{}_master.p'.format(c.id)), "rb"))
             })
 
         return c
+
+    def build_all_categories(self):
+        for c in self.categories:
+            c = Category(c['name'], c['id'], c['parent'], c['path'])
+
+            r = pickle.load(open(os.path.join(self.processed_categories_dir, '{}.p'.format(c.id)), "rb"))
+            c.set_result({
+                'Cumulat': pickle.load(open(os.path.join(self.processed_categories_dir, '{}.p'.format(c.id)), "rb")),
+                'Licenta': pickle.load(open(os.path.join(self.processed_categories_dir, '{}_bachelor.p'.format(c.id)), "rb")),
+                'Masterat': pickle.load(open(os.path.join(self.processed_categories_dir, '{}_master.p'.format(c.id)), "rb"))
+                })
+            self.category_list.append(c)
+        self.root = next((c for c in self.category_list if c.id == 1))
+        self.root.name = 'UPB'
+        self.root.parent_id = -1
+
+        for c in self.category_list:
+            if c.parent_id == 0:
+                c.set_parent(self.root)
+                continue
+            for c2 in self.category_list:
+                if c2.id == c.parent_id:
+                    c.set_parent(c2)
+
+    def export_category(self, category_id):
+        c = next((c for c in self.category_list if c.id == category_id))
+        c.export_spreadsheet()
+
+    def export_all_categories(self, export_dir):
+        for c in anytree.PreOrderIter(self.root):
+            if c.has_parent():
+                c.set_export_path(os.path.join(c.parent.export_path, c.name))
+            else:
+                c.set_export_path(os.path.join(export_dir, c.name))
+            c.export_spreadsheet()
+
+    def print_all_categories(self):
+        for pre, fill, node in anytree.RenderTree(self.root):
+            treestr = u"{}{}".format(pre, node.name)
+            print(treestr.ljust(8))
