@@ -6,7 +6,7 @@ list courses, list feedback forms in courses and retrieve feedback contents.
 
 Tested on UPB Moodle sites.
 
-Configure URL and credentials in feedback.conf file.
+Configure URL and credentials in moodle.conf file.
 
 (c) Mihai Chiroiu 18 May 2020
 (c) Razvan Deaconescu, razvan.deaconescu@upb.ro
