@@ -525,11 +525,17 @@ class Group():
         self.result = self.feedback.get_result()
         for k in self.result['courses'].keys():
             self.result['courses'][k]['num_students']['value'] = self.students4course[k]
-            self.result['courses'][k]['percentage']['value'] = float(self.result['courses'][k]['num']['value']) / self.result['courses'][k]['num_students']['value'] * 100
+            if self.result['courses'][k]['num_students']['value'] != 0:
+                self.result['courses'][k]['percentage']['value'] = float(self.result['courses'][k]['num']['value']) / self.result['courses'][k]['num_students']['value'] * 100
+            else:
+                self.result['courses'][k]['percentage']['value'] = 0.0
         for k in self.result['profs'].keys():
             if k in self.students4prof.keys():
                 self.result['profs'][k]['num_students']['value'] = self.students4prof[k]
-                self.result['profs'][k]['percentage']['value'] = float(self.result['profs'][k]['num']['value']) / self.result['profs'][k]['num_students']['value'] * 100
+                if self.result['profs'][k]['num_students']['value'] != 0:
+                    self.result['profs'][k]['percentage']['value'] = float(self.result['profs'][k]['num']['value']) / self.result['profs'][k]['num_students']['value'] * 100
+                else:
+                    self.result['profs'][k]['percentage']['value'] = 0.0
             else:
                 self.result['profs'][k]['num_students']['value'] = 0
                 self.result['profs'][k]['percentage']['value'] = 0.0
