@@ -467,5 +467,5 @@ class Reader():
 
     def print_all_categories(self):
         for pre, fill, node in anytree.RenderTree(self.root):
-            treestr = u"{}{}".format(pre, node.name)
+            treestr = u"{}{} ({})".format(pre, node.name, node.id)
             print(treestr.ljust(8))
