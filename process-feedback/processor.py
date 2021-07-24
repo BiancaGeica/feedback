@@ -478,9 +478,13 @@ class Course():
 
 class Group():
 
-    def __init__(self, processor, blacklist):
+    def __init__(self, processor, blacklist=None):
         self.courses = []
-        self.blacklist = re.compile(blacklist)
+        if blacklist:
+            self.blacklist = re.compile(blacklist)
+        else:
+            # If no blacklist, compile regex that matches nothing.
+            self.blacklist = re.compile('.^')
         self.blacklisted_courses = []
         self.rejected_courses = []
         self.processor = processor
