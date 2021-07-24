@@ -741,21 +741,25 @@ class Processor():
             print("course: {} ({}), students: {}, feedback: {} ({}) - {:.2f}%".format(course_id, shortname, num_students, feedback_id, num_feedbacks, percent))
 
     def construct_group_for_category_id(self, category_id):
-        g = Group(self, '^([0-9]+-[^-]+-(M-A[1-2]-S[1-2]-(CSP|[cC]ercet)|[LM]-A[1-4]-S2)|[^0-9])')
+        #g = Group(self, '^([0-9]+-[^-]+-(M-A[1-2]-S[1-2]-(CSP|[cC]ercet)|[LM]-A[1-4]-S2)|[^0-9])')
+        g = Group(self, '^([0-9]+-[^-]+-(M-A[1-2]-S[1-2]-(CSP|[cC]ercet))|[^0-9])')
         g.add_category(category_id)
         g.process()
         return g
 
     def construct_class_groups_for_category_id(self, category_id):
-        g = Group(self, '^([0-9]+-[^-]+-(M-A[1-2]-S[1-2]-(CSP|[cC]ercet)|[LM]-A[1-4]-S2)|[^0-9])')
+        #g = Group(self, '^([0-9]+-[^-]+-(M-A[1-2]-S[1-2]-(CSP|[cC]ercet)|[LM]-A[1-4]-S2)|[^0-9])')
+        g = Group(self, '^([0-9]+-[^-]+-(M-A[1-2]-S[1-2]-(CSP|[cC]ercet))|[^0-9])')
         g.add_category(category_id)
         g.process()
 
-        g_bachelor = Group(self, '^([0-9]+-[^-]+-(M-|[LM]-A[1-4]-S2)|[^0-9])')
+        #g_bachelor = Group(self, '^([0-9]+-[^-]+-(M-|[LM]-A[1-4]-S2)|[^0-9])')
+        g_bachelor = Group(self, '^([0-9]+-[^-]+-(M-)|[^0-9])')
         g_bachelor.add_category(category_id)
         g_bachelor.process()
 
-        g_master = Group(self, '^([0-9]+-[^-]+-(M-A[1-2]-S[1-2]-(CSP|[cC]ercet)|[LM]-A[1-4]-S2|L-)|[^0-9])')
+        #g_master = Group(self, '^([0-9]+-[^-]+-(M-A[1-2]-S[1-2]-(CSP|[cC]ercet)|[LM]-A[1-4]-S2|L-)|[^0-9])')
+        g_master = Group(self, '^([0-9]+-[^-]+-(M-A[1-2]-S[1-2]-(CSP|[cC]ercet)|L-)|[^0-9])')
         g_master.add_category(category_id)
         g_master.process()
 
@@ -765,7 +769,7 @@ class Processor():
                 }
 
     def construct_group_for_course_id(self, course_id):
-        g = Group(self)
+        g = Group(self, '^([0-9]+-[^-]+-(M-A[1-2]-S[1-2]-(CSP|[cC]ercet))|[^0-9])')
         g.add_course(course_id)
         g.process()
         return g
