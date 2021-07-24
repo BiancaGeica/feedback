@@ -662,7 +662,7 @@ class Processor():
         if course_name != None:
             course_id = next((c['id'] for c in self.courses if c['shortname'] == course_name))
         if course_id != None:
-            with open(os.path.join(self.users_dir, "{}_users.json".format(course_id))) as f:
+            with open(os.path.join(self.users_dir, "{}.json".format(course_id))) as f:
                 data = json.load(f)
                 for s in data:
                     if [r for r in s['roles'] if r['shortname'] == role]:
