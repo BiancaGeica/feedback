@@ -20,6 +20,8 @@ def main():
                         help='Configuration file')
     parser.add_argument('-f', '--feedbacks', nargs=1, required=True,
                         help='Feedbacks file in Pickle format')
+    parser.add_argument('-d', '--dump', nargs=1, required=True,
+                        help='Directory where to extract files')
     args = parser.parse_args()
 
     # Obtain Moodle credentials.
@@ -29,7 +31,7 @@ def main():
 
     # Retrieve feedbacks from pickle file.
     feedbacks = pickle.load(open(args.feedbacks[0], "rb"))
-    moodlews.extract_feedbacks(feedbacks)
+    moodlews.extract_feedbacks(feedbacks, args.dump[0])
 
 
 if __name__ == "__main__":

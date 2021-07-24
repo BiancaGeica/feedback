@@ -15,6 +15,7 @@ Configure URL and credentials in moodle.conf file.
 import json
 import requests
 import sys
+import os
 import configparser
 
 
@@ -143,7 +144,7 @@ def get_enrolled_users_for_courses(courses):
     return enrolled_users
 
 
-def extract_enrolled_users_for_courses(courses):
+def extract_enrolled_users_for_courses(courses, extract_directory):
     """Extract enrolled users.
     Go through courses and extract enrolled users for each course.
     """
@@ -154,12 +155,12 @@ def extract_enrolled_users_for_courses(courses):
                 "wsfunction":"core_enrol_get_enrolled_users",
                 "courseid":int(course['id'])
                 }
-        print(payload)
         if course['id'] == 1:
             continue
         r = requests.post(REST_URL, params=payload)
         res_json = r.json()
-        with open(str(course['id'])+"_users.json", 'w') as outfile:
+        print("Extracting for course ID: {}".format(course['id']))
+        with open(os.path.join(extract_directory, str(course['id']) + ".json"), 'w') as outfile:
             json.dump(res_json, outfile)
 
 
@@ -211,7 +212,7 @@ def get_feedbacks_for_courses(courses):
     return feedbacks
 
 
-def extract_feedbacks(feedbacks):
+def extract_feedbacks(feedbacks, extract_directory):
     """Extract feedbacks contents for each feedback.
     Each feedback content is stored in a JSON file named after the feedback id.
     """
@@ -227,12 +228,13 @@ def extract_feedbacks(feedbacks):
 
         r = requests.post(REST_URL, params=payload)
         res_json = r.json()
-        with open(str(feedback['id'])+".json", 'w') as outfile:
+        print("Extracting for feedback ID: {}".format(feedback['id']))
+        with open(os.path.join(extract_directory, str(feedback['id'])+".json"), 'w') as outfile:
             json.dump(res_json, outfile)
 
 
-def extract_feedbacks_for_courses(courses):
+def extract_feedbacks_for_courses(courses, extract_directory):
     """Extract feedback contents for feedbacks extracted from courses.
     """
     feedbacks = get_feedbacks_for_courses(courses)
-    extract_feedbacks(feedbacks)
+    extract_feedbacks(feedbacks, extract_directory)

@@ -20,6 +20,8 @@ def main():
                         help='Configuration file')
     parser.add_argument('-l', '--courses', nargs=1, required=True,
                         help='Courses file in Pickle format')
+    parser.add_argument('-d', '--dump', nargs=1, required=True,
+                        help='Directory where to extract files')
     args = parser.parse_args()
 
     # Obtain Moodle credentials.
@@ -29,7 +31,7 @@ def main():
 
     # Retrieve courses from pickle file.
     courses = pickle.load(open(args.courses[0], "rb"))
-    moodlews.extract_enrolled_users_for_courses(courses)
+    moodlews.extract_enrolled_users_for_courses(courses, args.dump[0])
 
 
 if __name__ == "__main__":

@@ -42,38 +42,36 @@ The typical running order is shown below:
    Each feedback is identified by a feedback ID and belongs to a course.
    In the sample run below the output Pickle file is `../../2020-2021-all/feedbacks.p`.
    ```
-   $ ./dump_courses.py -c moodle.conf -l ../../2020-2021-all/courses.p -d ../../2020-2021-all/feedbacks.p
+   $ ./dump_feedbacks.py -c moodle.conf -l ../../2020-2021-all/courses.p -d ../../2020-2021-all/feedbacks.p
    ```
 
 1. Extract per-courses enrolled users from Moodle in Python JSON files.
    Each courses is provided a file named `<course_id>_users.json` (e.g. `2802_users.json`) with user information.
-   User information in Python JSON files is stored in the current folder, using a command such as:
+   Use a command such as
    ```
-   $ ./extract_enrolled_users.py -c moodle.conf -l ../../2020-2021-all/courses.p
    $ mkdir ../../2020-2021-all/enrolled_users/
-   $ mv *_users.json ../../2020-2021-all/enrolled_users/
+   $ ./extract_enrolled_users.py -c moodle.conf -l ../../2020-2021-all/courses.p -d ../../2020-2021-all/enrolled_users/
    ```
 
 1. Extract feedback contents from Moodle in Python JSON files.
    Content for each feedback is extracted in a file named `<feedback_id>.json`.
    Feedback content in Python JSON files is stored in the current folder, using a command such as:
    ```
-   $ ./extract_feedback_contents.py -c moodle.conf -f ../../2020-2021-all/feedbacks.p
    $ mkdir ../../2020-2021-all/feedback_contents/
-   $ mv *.json ../../2020-2021-all/feedback_contents/
+   $ ./extract_feedback_contents.py -c moodle.conf -f ../../2020-2021-all/feedbacks.p -d ../../2020-2021-all/feedback_contents/
    ```
 
 At the end of running all the commands above, the typical contents of the output folder are:
 ```
 $ ls -F ../../2020-2021-all/
-categories.p  courses4categories.p  courses.p  enrolled_users/  feebdbacks.p  feedback_contents/
+categories.p  courses4categories.p  courses.p  enrolled_users/  feedbacks.p  feedback_contents/
 ```
 
 ## Others
 
 To take a look into a Pickle file, use a command such as:
 ```
-$ python -m pickle ../../2020-2021-all/feebdbacks.p | less
+$ python -m pickle ../../2020-2021-all/feedbacks.p | less
 ```
 
 The `json2pickle.py` file is to be used to convert JSON files in a folder in Pickle format.
