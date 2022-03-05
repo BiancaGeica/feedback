@@ -5,7 +5,7 @@ The connection to the Moodle instance is configured in the `moodle.conf` file.
 Create the `moodle.conf` by copying the `moodle.template.conf` file and updating its contents.
 
 The `moodlews.py` file implements functions for common functionality used by the retrieving scripts.
-It uses the Moodle web service API to authenticate, list courses, list categories, extract feedbacks, extract users.
+It uses the Moodle web service API to authenticate, list courses, list categories, dump feedbacks, dump users.
 The rest of the scripts are to be called to retrieve specific information.
 
 ## Running
@@ -45,20 +45,20 @@ The typical running order is shown below:
    $ ./dump_feedbacks.py -c moodle.conf -l ../../2020-2021-all/courses.p -d ../../2020-2021-all/feedbacks.p
    ```
 
-1. Extract per-courses enrolled users from Moodle in Python JSON files.
+1. Dump per-courses enrolled users from Moodle in Python JSON files.
    Each courses is provided a file named `<course_id>_users.json` (e.g. `2802_users.json`) with user information.
    Use a command such as
    ```
    $ mkdir ../../2020-2021-all/enrolled_users/
-   $ ./extract_enrolled_users.py -c moodle.conf -l ../../2020-2021-all/courses.p -d ../../2020-2021-all/enrolled_users/
+   $ ./dump_enrolled_users.py -c moodle.conf -l ../../2020-2021-all/courses.p -d ../../2020-2021-all/enrolled_users/
    ```
 
-1. Extract feedback contents from Moodle in Python JSON files.
-   Content for each feedback is extracted in a file named `<feedback_id>.json`.
+1. Dump feedback contents from Moodle in Python JSON files.
+   Content for each feedback is dumped in a file named `<feedback_id>.json`.
    Feedback content in Python JSON files is stored in the current folder, using a command such as:
    ```
    $ mkdir ../../2020-2021-all/feedback_contents/
-   $ ./extract_feedback_contents.py -c moodle.conf -f ../../2020-2021-all/feedbacks.p -d ../../2020-2021-all/feedback_contents/
+   $ ./dump_feedback_contents.py -c moodle.conf -f ../../2020-2021-all/feedbacks.p -d ../../2020-2021-all/feedback_contents/
    ```
 
 At the end of running all the commands above, the typical contents of the output folder are:

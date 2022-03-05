@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Extract Moodle enrolled users as per-course JSON file.
+Dump Moodle enrolled users in per-course JSON files.
 """
 
 import sys
@@ -11,7 +11,7 @@ import moodlews
 
 
 def main():
-    """Extract Moodle enrolled users as per-course JSON file.
+    """Dump Moodle enrolled users in per-course JSON files.
     Moodle configuration file and course Pickle file are provided
     as arguments.
     """
@@ -21,7 +21,7 @@ def main():
     parser.add_argument('-l', '--courses', nargs=1, required=True,
                         help='Courses file in Pickle format')
     parser.add_argument('-d', '--dump', nargs=1, required=True,
-                        help='Directory where to extract files')
+                        help='Folder where to dump files')
     args = parser.parse_args()
 
     # Obtain Moodle credentials.
@@ -31,7 +31,7 @@ def main():
 
     # Retrieve courses from pickle file.
     courses = pickle.load(open(args.courses[0], "rb"))
-    moodlews.extract_enrolled_users_for_courses(courses, args.dump[0])
+    moodlews.dump_enrolled_users_for_courses(courses, args.dump[0])
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Extract Moodle feedback contents as per-feedback JSON file.
+Dump Moodle feedback contents in per-feedback JSON files.
 """
 
 import sys
@@ -11,7 +11,7 @@ import moodlews
 
 
 def main():
-    """Extract Moodle feedback contents as per-feedback JSON file.
+    """Dump Moodle feedback contents in per-feedback JSON files.
     Moodle configuration file and feedback metadata Pickle file are provided
     as arguments.
     """
@@ -21,7 +21,7 @@ def main():
     parser.add_argument('-f', '--feedbacks', nargs=1, required=True,
                         help='Feedbacks file in Pickle format')
     parser.add_argument('-d', '--dump', nargs=1, required=True,
-                        help='Directory where to extract files')
+                        help='Folder where to dumpe files')
     args = parser.parse_args()
 
     # Obtain Moodle credentials.
@@ -31,7 +31,7 @@ def main():
 
     # Retrieve feedbacks from pickle file.
     feedbacks = pickle.load(open(args.feedbacks[0], "rb"))
-    moodlews.extract_feedbacks(feedbacks, args.dump[0])
+    moodlews.dump_feedbacks(feedbacks, args.dump[0])
 
 
 if __name__ == "__main__":

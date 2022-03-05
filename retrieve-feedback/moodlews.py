@@ -144,9 +144,9 @@ def get_enrolled_users_for_courses(courses):
     return enrolled_users
 
 
-def extract_enrolled_users_for_courses(courses, extract_directory):
-    """Extract enrolled users.
-    Go through courses and extract enrolled users for each course.
+def dump_enrolled_users_for_courses(courses, dump_folder):
+    """Dump enrolled users.
+    Go through courses and dump enrolled users for each course.
     """
     for course in courses:
         payload = {
@@ -159,8 +159,8 @@ def extract_enrolled_users_for_courses(courses, extract_directory):
             continue
         r = requests.post(REST_URL, params=payload)
         res_json = r.json()
-        print("Extracting for course ID: {}".format(course['id']))
-        with open(os.path.join(extract_directory, str(course['id']) + ".json"), 'w') as outfile:
+        print("Dumping users for course ID: {}".format(course['id']))
+        with open(os.path.join(dump_folder, str(course['id']) + ".json"), 'w') as outfile:
             json.dump(res_json, outfile)
 
 
@@ -212,9 +212,9 @@ def get_feedbacks_for_courses(courses):
     return feedbacks
 
 
-def extract_feedbacks(feedbacks, extract_directory):
-    """Extract feedbacks contents for each feedback.
-    Each feedback content is stored in a JSON file named after the feedback id.
+def dump_feedbacks(feedbacks, dump_folder):
+    """Dump feedback contents for each feedback.
+    Each feedback content is dumped in a JSON file named after the feedback id.
     """
     payload = {
             "wstoken":MOODLE_TOKEN,
@@ -228,13 +228,13 @@ def extract_feedbacks(feedbacks, extract_directory):
 
         r = requests.post(REST_URL, params=payload)
         res_json = r.json()
-        print("Extracting for feedback ID: {}".format(feedback['id']))
-        with open(os.path.join(extract_directory, str(feedback['id'])+".json"), 'w') as outfile:
+        print("Dumping feedback contents for feedback ID: {}".format(feedback['id']))
+        with open(os.path.join(dump_folder, str(feedback['id'])+".json"), 'w') as outfile:
             json.dump(res_json, outfile)
 
 
-def extract_feedbacks_for_courses(courses, extract_directory):
-    """Extract feedback contents for feedbacks extracted from courses.
+def dump_feedbacks_for_courses(courses, dump_folder):
+    """Dump feedback contents for feedbacks extracted from courses.
     """
     feedbacks = get_feedbacks_for_courses(courses)
-    extract_feedbacks(feedbacks, extract_directory)
+    dump_feedbacks(feedbacks, dump_folder)
