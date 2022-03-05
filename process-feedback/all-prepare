@@ -12,5 +12,5 @@ if test ! -d "$top"; then
     exit 1
 fi
 
-./json2csv "$top"/json/raw "$top"/csv/raw
+./json2csv-folder "$top"/json/raw "$top"/csv/raw
 ./remove_extra "$top"/csv/raw
