@@ -1,7 +1,7 @@
 # Retrieve Feedback
 
 These scripts retrieve feedback from a running Moodle instance.
-The connection to Moodle instance is configured in the `moodle.conf` file.
+The connection to the Moodle instance is configured in the `moodle.conf` file.
 Create the `moodle.conf` by copying the `moodle.template.conf` file and updating its contents.
 
 The `moodlews.py` file implements functions for common functionality used by the retrieving scripts.
@@ -30,7 +30,7 @@ The typical running order is shown below:
 
 1. Create a simple mapping of courses to categories in a Pickle file.
    Categories are hierarchical.
-   A course is mapeped to a category if it is part of that category or any subcategory.
+   A course is mapped to a category if it is part of that category or any subcategory.
    The Pickle file stores a dictionary: they key is the category ID and the value is a list of course IDs belonging (hierarchically) to that category.
    In the sample run below the output Pickle file is `../../2020-2021-all/courses4categories.p`.
    ```
