@@ -8,3 +8,4 @@ fi
 in="$1"
 
 find "$in" -type f -name '*-CSP-*.csv' -delete
+find "$in" -type f -name '*-CSPED-*.csv' -delete
