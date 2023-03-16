@@ -17,9 +17,9 @@ rm -f "$top"/csv/common/*
 rm -f "$top"/csv/per-series/*
 rm -f "$top"/csv/per-semester/*
 
-find "$top"/xls -type f -delete
+find "$top"/xlsx -type f -delete
 find "$top"/sep -type f -delete
-find "$top"/sep-xls -type f -delete
-find "$top"/processed-xls -type f -delete
+find "$top"/sep-xlsx -type f -delete
+find "$top"/processed-xlsx -type f -delete
 find "$top"/sep-processed -type f -delete
-find "$top"/sep-processed-xls -type f -delete
+find "$top"/sep-processed-xlsx -type f -delete
