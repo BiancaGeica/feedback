@@ -7,17 +7,17 @@ import unicodedata
 
 
 def get_eval(s):
-    if s == "5 - Complet de Acord":
+    if s.startswith("5"):
         return 5
-    if s == "4 - ...":
+    if s.startswith("4"):
         return 4
-    if s == "3 - ...":
+    if s.startswith("3"):
         return 3
-    if s == "2 - ...":
+    if s.startswith("2"):
         return 2
-    if s == "1 - Deloc de acord":
+    if s.startswith("1"):
         return 1
-    if s == "0 - Nu pot aprecia - Nu se aplica":
+    if s.startswith("0"):
         return 0
 
     return 0
