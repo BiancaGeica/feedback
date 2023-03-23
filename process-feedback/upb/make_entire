@@ -21,12 +21,12 @@ fi
 result="$out"/L.csv
 echo "Creating $result ..."
 head -1 "$(ls "$in"/*.csv | head -1)" > "$result"
-tail -q -n +2 "$in"/L-*.csv >> "$result"
+tail -q -n +2 "$in"/*-L-A*.csv >> "$result"
 
 result="$out"/M.csv
 echo "Creating $result ..."
 head -1 "$(ls "$in"/*.csv | head -1)" > "$result"
-tail -q -n +2 "$in"/M-*.csv >> "$result"
+tail -q -n +2 "$in"/*-M-A*.csv >> "$result"
 
 result="$out"/all.csv
 echo "Creating $result ..."

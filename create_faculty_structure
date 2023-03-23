@@ -15,7 +15,7 @@ create_substructure()
 {
     mkdir "$1"
     mkdir "$1"/raw
-    mkdir "$1"/common
+#    mkdir "$1"/common
     mkdir "$1"/entire
     mkdir "$1"/per-semester
 #    mkdir "$1"/per-series
