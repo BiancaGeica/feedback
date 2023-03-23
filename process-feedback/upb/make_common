@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if test $# -ne 2; then
+    echo "Usage: $0 <csv-input-folder> <output-common-folder>" 1>&2
+    exit 1
+fi
+
+in="$1"
+out="$2"
+
+if test ! -d "$in"; then
+    echo "Error: Folder $in does not exist or is not a folder." 1>&2
+    exit 1
+fi
+
+if test ! -d "$out"; then
+    echo "Error: Folder $out does not exist or is not a folder." 1>&2
+    exit 1
+fi
+
+IFS='\n'
+for i in "$in"/*.csv; do
+    b="$(basename "$i")"
+    grep -o '[LM]-A[1-4]-S[1-2]-[^-]\+' <<< "$b"
+done | sort -u | \
+while read id; do
+    num=$(ls "$in"/"$id"-*.csv 2> /dev/null | wc -l)
+    if test $num -eq 0; then
+        continue
+    fi
+    if test $num -eq 1; then
+        result="$out"/$(basename "$in"/"$id"-*.csv)
+        echo "Creating $result ..."
+        head -1 "$(ls "$in"/"$id"-*.csv | head -1)" > "$result"
+        tail -q -n +2 "$in"/"$id"-*.csv >> "$result"
+        continue
+    fi
+    result="$out"/"$id"-all.csv
+    echo "Creating $result ..."
+    head -1 "$(ls "$in"/"$id"-*.csv | head -1)" > "$result"
+    tail -q -n +2 "$in"/"$id"-*.csv >> "$result"
+done

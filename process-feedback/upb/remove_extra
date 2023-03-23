@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if test $# -ne 1; then
+    echo "Usage: $0 <csv-folder>" 1>&2
+    exit 1
+fi
+
+in="$1"
+
+find "$in" -type f -name '*-CSP-*.csv' -delete
+find "$in" -type f -name '*-CSPED-*.csv' -delete

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+if test $# -ne 1; then
+    echo "Usage: $0 <top-folder>" 1>&2
+    exit 1
+fi
+
+top="$1"
+
+if test ! -d "$top"; then
+    echo "Error: Folder $top does not exist or is not a folder." 1>&2
+    exit 1
+fi
+
+#./separate_acs "$top"/csv/raw/ "$top"/sep/
+
+./make_entire "$top"/csv/raw/ "$top"/csv/entire/
+
+./make_common "$top"/csv/raw/ "$top"/csv/common/
+
+./make_per_semester "$top"/csv/raw/ "$top"/csv/per-semester/
+
+./process_folder "$top"/csv/raw/ "$top"/processed/raw/
+./process_folder "$top"/csv/entire/ "$top"/processed/entire/
+./process_folder "$top"/csv/common/ "$top"/processed/common/
+./process_folder "$top"/csv/per-series/ "$top"/processed/per-series/
+./process_folder "$top"/csv/per-semester/ "$top"/processed/per-semester/
+
+./csv2xlsx "$top"/csv/raw/ "$top"/xlsx/raw/
+./csv2xlsx "$top"/csv/entire/ "$top"/xlsx/entire/
+./csv2xlsx "$top"/csv/common/ "$top"/xlsx/common/
+./csv2xlsx "$top"/csv/per-series/ "$top"/xlsx/per-series/
+./csv2xlsx "$top"/csv/per-semester/ "$top"/xlsx/per-semester/
+
+./csv2xlsx "$top"/processed/raw/ "$top"/processed-xlsx/raw/
+./csv2xlsx "$top"/processed/entire/ "$top"/processed-xlsx/entire/
+./csv2xlsx "$top"/processed/common/ "$top"/processed-xlsx/common/
+./csv2xlsx "$top"/processed/per-series/ "$top"/processed-xlsx/per-series/
+./csv2xlsx "$top"/processed/per-semester/ "$top"/processed-xlsx/per-semester/
