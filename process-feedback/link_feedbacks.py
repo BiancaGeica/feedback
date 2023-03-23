@@ -29,8 +29,8 @@ def main():
     feedbacks = os.path.join(args.datadir, config['files']['feedbacks'])
     feedback_contents = os.path.join(args.datadir, config['files']['feedback_contents'])
     users = os.path.join(args.datadir, config['files']['users'])
-    processed_courses = os.path.join(args.datadir, config['files']['processed_courses'])
-    processed_categories = os.path.join(args.datadir, config['files']['processed_categories'])
+    #processed_courses = os.path.join(args.datadir, config['files']['processed_courses'])
+    #processed_categories = os.path.join(args.datadir, config['files']['processed_categories'])
 
     p = processor.Processor(courses, categories, courses4categories, feedbacks, feedback_contents, users)
 
