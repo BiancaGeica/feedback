@@ -30,7 +30,6 @@ create_substructure "$top"/processed-xlsx
 create_substructure "$top"/user-json
 
 mkdir "$top"/summary
-
 mkdir "$top"/summary-xlsx
 
 mkdir "$top"/mapping/
@@ -38,3 +37,4 @@ mkdir "$top"/mapping/num_feedbacks
 mkdir "$top"/mapping/num_users
 
 mkdir "$top"/analysis
+mkdir "$top"/analysis-xlsx
