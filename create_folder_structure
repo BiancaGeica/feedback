@@ -61,14 +61,6 @@ mkdir "$top"/user-sep-json
 create_substructure "$top"/user-sep-json/cti
 create_substructure "$top"/user-sep-json/is
 
-mkdir "$top"/sep-json
-create_substructure "$top"/sep-json/cti
-create_substructure "$top"/sep-json/is
-
-mkdir "$top"/sep-csv
-create_substructure "$top"/sep-csv/cti
-create_substructure "$top"/sep-csv/is
-
 mkdir "$top"/summary
 mkdir "$top"/summary/cti
 mkdir "$top"/summary/is
