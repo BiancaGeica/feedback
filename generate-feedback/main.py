@@ -112,7 +112,10 @@ def generate_feedback_data(feedback_id, course_name, teacher_name, num_students)
         ("Does the course tutor have ...", "likert", ""),
         ("Was the teaching method ...", "likert", ""),
         ("Did the course stimulate ...", "likert", ""),
-        ("Other personal comments or ...", "text", "")
+        ("What are the positive ...", "text_positive", ""),
+        ("What do you think needs to ...", "text_improve", ""),
+        ("In your opinion, the main ...", "text_problem", ""),
+        ("Other personal comments or ...", "text_other", "")
     ]
 
     for i in range(num_students):
