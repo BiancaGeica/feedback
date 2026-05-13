@@ -5,6 +5,7 @@ import random
 import argparse
 import configparser
 import logging
+import templates
 
 PICKLE_INPUT_DIR = 'pickles'
 
@@ -221,6 +222,13 @@ def main():
     courses_map = {c['id']: c for c in courses}
     categories_map = {cat['id']: cat for cat in categories}
 
+    if not os.path.exists('profesori.json'):
+        logger.error("Lipseste fisierul profesori.json!")
+        return
+        
+    with open('profesori.json', 'r', encoding='utf-8') as f:
+        lista_profesori = json.load(f)
+
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
         logger.info(f"Folder created: '{output_dir}'")
@@ -247,7 +255,7 @@ def main():
             if category_name:
                 full_subject_name += f" ({category_name})"
 
-            teacher_name = "Prenume NUME"
+            teacher_name = random.choice(lista_profesori)
             num_students = random.randint(min_students, max_students)
 
             json_data = generate_feedback_data(fb_id, full_subject_name, teacher_name, num_students)
