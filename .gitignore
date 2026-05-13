@@ -25,3 +25,4 @@ core
 feedback_contents/
 generator.log
 pickles/
+__pycache__/

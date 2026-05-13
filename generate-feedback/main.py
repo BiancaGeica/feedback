@@ -67,8 +67,12 @@ def load_pickle(filename):
 
 def get_random_response(question_type):
     if question_type == "grade":
-        grade = random.randint(5, 10)
+        grade = random.randint(1, 10) 
         return str(grade), str(grade)
+    
+    elif question_type == "hours":
+        hours = random.randint(1, 15)
+        return str(hours), str(hours)
 
     elif question_type == "likert":
         options = [
@@ -112,6 +116,16 @@ def generate_feedback_data(feedback_id, course_name, teacher_name, num_students)
         ("Does the course tutor have ...", "likert", ""),
         ("Was the teaching method ...", "likert", ""),
         ("Did the course stimulate ...", "likert", ""),
+        ("Was the behavior of the ...", "likert", ""),
+        ("Are the teaching materials ...", "likert", ""),
+        ("Does the laboratory teacher...", "likert", ""),
+        ("Did the laboratory teacher ...", "likert", ""),
+        ("Did the applications ...", "likert", ""),
+        ("Was the behavior of the ...", "likert", ""),
+        ("Are the teaching materials ...", "likert", ""),
+        ("Estimate the average number...", "hours", ""),
+        ("Were the amount and ...", "likert", ""),
+        ("Did the topics / projects /...", "likert", ""),
         ("What are the positive ...", "text_positive", ""),
         ("What do you think needs to ...", "text_improve", ""),
         ("In your opinion, the main ...", "text_problem", ""),
