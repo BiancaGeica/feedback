@@ -176,8 +176,7 @@ def generate_feedback_data(feedback_id, course_name, teacher_name, num_students)
             if q_type.startswith("text_"):
                 val = ""
                 if will_leave_text:
-                    #TO-DO, here should be the text feedback
-                    val = f"Test feedback pentru profil: {profil_student}"
+                    val = templates.get_consistent_text(q_type, course_name, teacher_name, profil_student)
                 
                 entry["printval"] = val
                 entry["rawval"] = val
