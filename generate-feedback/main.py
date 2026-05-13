@@ -67,8 +67,12 @@ def load_pickle(filename):
 
 def get_random_response(question_type):
     if question_type == "grade":
-        grade = random.randint(5, 10)
+        grade = random.randint(1, 10) 
         return str(grade), str(grade)
+    
+    elif question_type == "hours":
+        hours = random.randint(1, 15)
+        return str(hours), str(hours)
 
     elif question_type == "likert":
         options = [
@@ -112,6 +116,16 @@ def generate_feedback_data(feedback_id, course_name, teacher_name, num_students)
         ("Does the course tutor have ...", "likert", ""),
         ("Was the teaching method ...", "likert", ""),
         ("Did the course stimulate ...", "likert", ""),
+        ("Was the behavior of the ...", "likert", ""),
+        ("Are the teaching materials ...", "likert", ""),
+        ("Does the laboratory teacher...", "likert", ""),
+        ("Did the laboratory teacher ...", "likert", ""),
+        ("Did the applications ...", "likert", ""),
+        ("Was the behavior of the ...", "likert", ""),
+        ("Are the teaching materials ...", "likert", ""),
+        ("Estimate the average number...", "hours", ""),
+        ("Were the amount and ...", "likert", ""),
+        ("Did the topics / projects /...", "likert", ""),
         ("What are the positive ...", "text_positive", ""),
         ("What do you think needs to ...", "text_improve", ""),
         ("In your opinion, the main ...", "text_problem", ""),
@@ -122,28 +136,52 @@ def generate_feedback_data(feedback_id, course_name, teacher_name, num_students)
         responses = []
         current_attempt_id = base_attempt_id + i
 
+        profil_student = "neutru"
+        will_leave_text = random.random() > 0.5 #there are 50% chances for a student to leave literal feedback to simulate accurate statistics
+
+        temp_responses = []
         for q_name, q_type, q_default in questions_structure:
             entry = {
                 "id": current_response_global_counter,
                 "name": q_name,
                 "printval": "",
-                "rawval": ""
+                "rawval": "",
+                "q_type": q_type
             }
 
             if q_type == "fixed":
                 entry["printval"] = q_default
                 entry["rawval"] = q_default
-            elif q_type == "text":
-                val = "feedback scris" if random.random() > 0.8 else ""
-                entry["printval"] = val
-                entry["rawval"] = val
-            else:
+            elif not q_type.startswith("text_"):
                 p_val, r_val = get_random_response(q_type)
                 entry["printval"] = p_val
                 entry["rawval"] = r_val
-
-            responses.append(entry)
+                
+                if q_type == "grade":
+                    nota = int(r_val)
+                    if nota >= 8:
+                        profil_student = "multumit"
+                    elif nota >= 5:
+                        profil_student = "constructiv"
+                    else:
+                        profil_student = "nemultumit"
+            
+            temp_responses.append(entry)
             current_response_global_counter += 1
+
+        for entry in temp_responses:
+            q_type = entry.pop("q_type")
+            
+            if q_type.startswith("text_"):
+                val = ""
+                if will_leave_text:
+                    #TO-DO, here should be the text feedback
+                    val = f"Test feedback pentru profil: {profil_student}"
+                
+                entry["printval"] = val
+                entry["rawval"] = val
+            
+            responses.append(entry)
 
         anon_attempts.append({
             "id": current_attempt_id,
