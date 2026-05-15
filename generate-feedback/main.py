@@ -221,11 +221,11 @@ def main():
     courses_map = {c['id']: c for c in courses}
     categories_map = {cat['id']: cat for cat in categories}
 
-    if not os.path.exists('profesori.json'):
+    if not os.path.exists('jsons/profesori.json'):
         logger.error("Lipseste fisierul profesori.json!")
         return
         
-    with open('profesori.json', 'r', encoding='utf-8') as f:
+    with open('jsons/profesori.json', 'r', encoding='utf-8') as f:
         lista_profesori = json.load(f)
 
     if not os.path.exists(output_dir):
